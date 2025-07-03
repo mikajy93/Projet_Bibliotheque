@@ -1,0 +1,14 @@
+Fonctionnalité : Connexion (Login)
+Permettre à un utilisateur (adhérent ou bibliothécaire) de se connecter à son espace personnel via un formulaire d'authentification.
+Processus :
+L'utilisateur saisit ses identifiants (email/login + mot de passe).
+Le système vérifie l'existence du compte et l'authentifie.
+Règles de gestion :
+Validation des identifiants :
+Vérifier si l'identifiant (email ou login) existe dans la table Adherent ou Bibliothecaire.
+Si non trouvé → erreur : "Identifiant ou mot de passe incorrect."
+Vérification du mot de passe :
+i échec → erreur : "Identifiant ou mot de passe incorrect." (message générique pour la sécurité).
+Rediriger en fonction du rôle :
+Adhérent → Page d'accueil adherent (ex: /adherent/accueil).
+Bibliothécaire → Page d'accueil bibliothécaire (ex: /bibliothecaire/accueil).
