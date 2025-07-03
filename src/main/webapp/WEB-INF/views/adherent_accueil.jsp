@@ -119,10 +119,16 @@
                     <td><c:out value="${livre.ageMinimum}"/></td>
                     <td><c:out value="${livre.anneePublication}"/></td>
                     <td>
-                        <form action="${pageContext.request.contextPath}/adherent/emprunter" method="post" style="display:inline;">
-                            <input type="hidden" name="idLivre" value="${livre.id_livre}"/>
-                            <button type="submit">Prêter</button>
-                        </form>
+                        <c:forEach var="exemp" items="${exemplaires}">
+                            <c:if test="${exemp.livre.id_livre == livre.id_livre}">
+                                <!-- Ici tu peux ajouter une condition pour n'afficher que les exemplaires disponibles -->
+                                <form action="${pageContext.request.contextPath}/adherent/emprunter" method="post" style="display:inline;">
+                                    <input type="hidden" name="idExemplaire" value="${exemp.id_exemplaire}"/>
+                                    <input type="hidden" name="idTypePret" value="1"/><!-- ou autre valeur selon le type de prêt -->
+                                    <button type="submit">Prêter #${exemp.id_exemplaire}</button>
+                                </form>
+                            </c:if>
+                        </c:forEach>
                         <form action="${pageContext.request.contextPath}/adherent/reserver" method="post" style="display:inline;">
                             <input type="hidden" name="idLivre" value="${livre.id_livre}"/>
                             <button type="submit">Réserver</button>

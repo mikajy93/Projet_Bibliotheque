@@ -22,6 +22,8 @@ public class Adherent {
     @Column(name = "date_naissance", nullable = false)
     private java.util.Date dateNaissance;
 
+    private Integer quotaRestant;
+
     @ManyToOne
     @JoinColumn(name = "id_type_adherent", nullable = false)
     private TypeAdherent typeAdherent;
@@ -74,5 +76,13 @@ public class Adherent {
 
     public void setTypeAdherent(TypeAdherent typeAdherent) {
         this.typeAdherent = typeAdherent;
+    }
+
+    public Integer getQuotaRestant() {
+        return quotaRestant;
+    }
+
+    public void setQuotaRestant(Integer quotaRestant) {
+        this.quotaRestant = quotaRestant;
     }
 }
