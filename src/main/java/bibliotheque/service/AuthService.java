@@ -64,7 +64,9 @@ public class AuthService {
         throw new RuntimeException("Identifiant ou mot de passe incorrect.");
     }
 
-public void emprunterLivre(int idAdherent, int idExemplaire, int idTypePret) {
+
+
+    public void emprunterLivre(int idAdherent, int idExemplaire, int idTypePret) {
         // Vérification 1: L'adhérent existe
         Optional<Adherent> adherentOpt = adherentRepository.findById(idAdherent);
         if (!adherentOpt.isPresent()) {
@@ -213,6 +215,8 @@ public void emprunterLivre(int idAdherent, int idExemplaire, int idTypePret) {
         return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
             && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
     }
+
+
 
     public List<Pret> getHistoriquePrets() {
         return pretRepository.findAll();
