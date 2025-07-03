@@ -1,10 +1,12 @@
 package bibliotheque.controller;
 
 import bibliotheque.entity.Livre;
+import bibliotheque.repository.LivreRepository;
 import bibliotheque.service.LivreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,10 +14,12 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/livres")
 public class LivreController {
-
+    
     @Autowired
     private LivreService livreService;
-
+    
+    @Autowired
+private LivreRepository livreRepository;
     @GetMapping
     public List<Livre> getAllLivres() {
         return livreService.findAll();
@@ -40,4 +44,14 @@ public class LivreController {
     public void deleteLivre(@PathVariable int id) {
         livreService.deleteById(id);
     }
+
+
+    @GetMapping("/livres")
+    public String afficherListeLivres(Model model) {
+        List<Livre> livres = livreRepository.findAll();
+        model.addAttribute("livres", livres);
+        return "livres"; 
+    }
+
+    
 }

@@ -197,3 +197,37 @@ Pour exécuter et vérifier le script :
 - **Impact sur le code Java** : Ce script de données corrigé est compatible avec les classes Java (`AuthService.java`, etc.) fournies précédemment, car il respecte le schéma de la base de données et inclut des données pour `Adherent` et `Bibliothecaire` nécessaires à l'authentification.
 
 Si vous rencontrez des erreurs ou avez besoin d'autres ajustements (par exemple, ajouter plus de données ou modifier des valeurs), faites-le-moi savoir !
+
+
+
+
+
+
+
+
+
+
+
+```sql
+INSERT INTO TypeLivre (libelle) VALUES ('Roman'), ('Science-Fiction');
+INSERT INTO Auteur (nom, prenom) VALUES ('Hugo', 'Victor'), ('Asimov', 'Isaac');
+INSERT INTO Livre (titre, isbn, id_type, edition, id_auteur, age_minimum, annee_publication)
+VALUES ('Les Misérables', '9781234567890', 1, 'Gallimard', 1, 12, 1862),
+       ('Fondation', '9780987654321', 2, 'Denoël', 2, 14, 1951);
+INSERT INTO Exemplaire (id_livre) VALUES (1), (1), (2);
+INSERT INTO TypePret (libelle) VALUES ('Standard');
+INSERT INTO StatutReservation (libelle) VALUES ('Réservé');
+INSERT INTO TypeAdherent (libelle, duree_pret, quota, nb_reservation_max, duree_penalite, nb_jour_max_prolongement)
+VALUES ('Standard', 14, 5, 3, 30, 7);
+INSERT INTO Adherent (nom, email, mot_de_passe, date_naissance, id_type_adherent)
+VALUES ('Dupont', 'jean@example.com', 'password123', '1990-01-01', 1);
+INSERT INTO Bibliothecaire (nom, email, mot_de_passe)
+VALUES ('Curie', 'marie@example.com', 'password123');
+INSERT INTO Abonnement (id_adherent, date_debut, date_fin)
+VALUES (1, '2025-01-01', '2026-01-01');
+INSERT INTO EtatExemplaire (libelle) VALUES ('Disponible'), ('Emprunté'), ('Endommagé');
+INSERT INTO StatusExemplaire (id_exemplaire, date_changement, id_etat)
+VALUES (1, '2025-07-03', 1), (2, '2025-07-03', 1), (3, '2025-07-03', 1);
+INSERT INTO JourFerie (date_jourferie, nom)
+VALUES ('2025-12-25', 'Noël'), ('2026-01-01', 'Jour de l''An');
+```

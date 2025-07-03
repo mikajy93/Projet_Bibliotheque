@@ -1,12 +1,21 @@
 package bibliotheque.controller;
 
+import bibliotheque.entity.Adherent;
 import bibliotheque.entity.Livre;
+import bibliotheque.entity.Pret;
+import bibliotheque.repository.ExemplaireRepository;
 import bibliotheque.repository.LivreRepository;
+import bibliotheque.repository.TypeAdherentRepository;
+import bibliotheque.service.AdherentService;
 import bibliotheque.service.AuthService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,9 +33,19 @@ public class AuthController {
     @Autowired
     private LivreRepository livreRepository;
 
+    @Autowired
+    private ExemplaireRepository exemplaireRepository;
+
+    @Autowired
+    private TypeAdherentRepository typeAdherentRepository;
+
+    @Autowired
+    private AdherentService adherentService;
+
+
     @GetMapping({"/", "/auth/login"})
     public String showLoginForm(Model model) {
-        return "login"; // Retourne la vue JSP (WEB-INF/views/login.jsp)
+        return "login";
     }
 
     @PostMapping("/auth/login")
@@ -44,10 +63,39 @@ public class AuthController {
             }
         } catch (RuntimeException e) {
             model.addAttribute("error", "Identifiant ou mot de passe incorrect.");
-            return "login"; // Retourne la vue JSP avec le message d'erreur
+            return "login";
         }
-        return "login"; // Fallback (ne devrait pas arriver)
+        return "login";
     }
+
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        model.addAttribute("adherent", new Adherent());
+        model.addAttribute("typesAdherent", typeAdherentRepository.findAll());
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String processRegister(@ModelAttribute("adherent") Adherent adherent,
+                                 @RequestParam("idTypeAdherent") int idTypeAdherent,
+                                 Model model) {
+        try {
+            if (adherentService.emailExiste(adherent.getEmail())) {
+                model.addAttribute("error", "Cet email est déjà utilisé.");
+                model.addAttribute("typesAdherent", typeAdherentRepository.findAll());
+                return "register";
+            }
+            adherentService.inscrireAdherent(adherent, idTypeAdherent);
+            model.addAttribute("success", "Inscription réussie, vous pouvez vous connecter.");
+            return "login";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("typesAdherent", typeAdherentRepository.findAll());
+            return "register";
+        }
+    }
+
+
 
     @GetMapping("/adherent/accueil")
     public String showAdherentAccueil(Model model, HttpSession session) {
@@ -59,42 +107,63 @@ public class AuthController {
         }
         model.addAttribute("userName", userName);
         model.addAttribute("livres", livreRepository.findAll());
-        return "adherent_accueil"; // Retourne la vue JSP (WEB-INF/views/adherent_accueil.jsp)
+        model.addAttribute("exemplaires", exemplaireRepository.findAll());
+        return "adherent_accueil";
     }
 
     @PostMapping("/adherent/emprunter")
-    public String emprunterLivre(@RequestParam("idLivre") int idLivre, HttpSession session, Model model) {
+    public String emprunterLivre(@RequestParam("idExemplaire") int idExemplaire, 
+                                 @RequestParam("idTypePret") int idTypePret, 
+                                 HttpSession session, Model model) {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null || !"adherent".equals(session.getAttribute("userRole"))) {
             String contextPath = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
             return "redirect:" + contextPath + "/";
         }
         try {
-            authService.emprunterLivre(idLivre, userId);
+            authService.emprunterLivre(userId, idExemplaire, idTypePret);
             model.addAttribute("success", "Livre emprunté avec succès.");
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
+            if (e.getMessage().contains("réserv")) {
+                model.addAttribute("reservationPossible", true);
+            }
         }
         model.addAttribute("userName", session.getAttribute("userName"));
         model.addAttribute("livres", livreRepository.findAll());
+        model.addAttribute("exemplaires", exemplaireRepository.findAll());
         return "adherent_accueil";
     }
 
-    @PostMapping("/adherent/reserver")
-    public String reserverLivre(@RequestParam("idLivre") int idLivre, HttpSession session, Model model) {
+    // @PostMapping("/adherent/reserver")
+    // public String reserverLivre(@RequestParam("idLivre") int idLivre, HttpSession session, Model model) {
+    //     Integer userId = (Integer) session.getAttribute("userId");
+    //     if (userId == null || !"adherent".equals(session.getAttribute("userRole"))) {
+    //         String contextPath = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+    //         return "redirect:" + contextPath + "/";
+    //     }
+    //     try {
+    //         authService.reserverLivre(idLivre, userId);
+    //         model.addAttribute("success", "Livre réservé avec succès.");
+    //     } catch (RuntimeException e) {
+    //         model.addAttribute("error", e.getMessage());
+    //     }
+    //     model.addAttribute("userName", session.getAttribute("userName"));
+    //     model.addAttribute("livres", livreRepository.findAll());
+    //     model.addAttribute("exemplaires", exemplaireRepository.findAll());
+    //     return "adherent_accueil";
+    // }
+
+    @GetMapping("/bibliothecaire/accueil")
+    public String showBibliothecaireAccueil(Model model, HttpSession session) {
         Integer userId = (Integer) session.getAttribute("userId");
-        if (userId == null || !"adherent".equals(session.getAttribute("userRole"))) {
+        String userName = (String) session.getAttribute("userName");
+        if (userId == null || userName == null || !"bibliothecaire".equals(session.getAttribute("userRole"))) {
             String contextPath = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
             return "redirect:" + contextPath + "/";
         }
-        try {
-            authService.reserverLivre(idLivre, userId);
-            model.addAttribute("success", "Livre réservé avec succès.");
-        } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
-        }
-        model.addAttribute("userName", session.getAttribute("userName"));
-        model.addAttribute("livres", livreRepository.findAll());
-        return "adherent_accueil";
+        model.addAttribute("userName", userName);
+        model.addAttribute("prets", authService.getHistoriquePrets());
+        return "bibliothecaire_accueil";
     }
 }

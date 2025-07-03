@@ -65,6 +65,7 @@ CREATE TABLE Adherent (
     mot_de_passe VARCHAR(100) NOT NULL, 
     date_naissance DATE NOT NULL,
     id_type_adherent INT NOT NULL,
+    quota_restant INT NOT NULL,
     FOREIGN KEY (id_type_adherent) REFERENCES TypeAdherent(id_type_adherent)
 );
 
