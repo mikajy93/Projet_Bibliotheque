@@ -14,6 +14,8 @@ public class ReservationValidationController {
     @Autowired
     private ReservationService reservationService;
 
+
+
     @GetMapping("/reservations")
     public String listReservations(Model model) {
         model.addAttribute("reservations", reservationService.getReservationsEnAttente());

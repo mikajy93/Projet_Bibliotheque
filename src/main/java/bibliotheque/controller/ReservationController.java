@@ -46,6 +46,10 @@ public class ReservationController {
         return reservationService.save(reservation);
     }
 
+
+
+
+
     @DeleteMapping("/{id}")
     public void deleteReservation(@PathVariable int id) {
         reservationService.deleteById(id);
@@ -86,27 +90,27 @@ public class ReservationController {
     }
 
     @PostMapping("/adherent/reserver")
-public String reserver(
-    @RequestParam("idExemplaire") int idExemplaire,
-    @RequestParam("dateReservation") String dateReservationStr,
-    HttpSession session,
-    RedirectAttributes redirectAttributes) {
-    Integer idAdherent = (Integer) session.getAttribute("userId");
-    if (idAdherent == null) {
-        redirectAttributes.addFlashAttribute("error", "Vous devez être connecté.");
+    public String reserver(
+        @RequestParam("idExemplaire") int idExemplaire,
+        @RequestParam("dateReservation") String dateReservationStr,
+        HttpSession session,
+        RedirectAttributes redirectAttributes) {
+        Integer idAdherent = (Integer) session.getAttribute("userId");
+        if (idAdherent == null) {
+            redirectAttributes.addFlashAttribute("error", "Vous devez être connecté.");
+            return "redirect:/adherent/accueil";
+        }
+        try {
+            Date dateReservation = new SimpleDateFormat("yyyy-MM-dd").parse(dateReservationStr);
+            String result = reservationService.reserverExemplaire(idAdherent, idExemplaire, dateReservation);
+            if ("success".equals(result)) {
+                redirectAttributes.addFlashAttribute("success", "Réservation demandée, en attente de validation.");
+            } else {
+                redirectAttributes.addFlashAttribute("error", result);
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur de format de date.");
+        }
         return "redirect:/adherent/accueil";
     }
-    try {
-        Date dateReservation = new SimpleDateFormat("yyyy-MM-dd").parse(dateReservationStr);
-        String result = reservationService.reserverExemplaire(idAdherent, idExemplaire, dateReservation);
-        if ("success".equals(result)) {
-            redirectAttributes.addFlashAttribute("success", "Réservation demandée, en attente de validation.");
-        } else {
-            redirectAttributes.addFlashAttribute("error", result);
-        }
-    } catch (Exception e) {
-        redirectAttributes.addFlashAttribute("error", "Erreur de format de date.");
-    }
-    return "redirect:/adherent/accueil";
-}
 }

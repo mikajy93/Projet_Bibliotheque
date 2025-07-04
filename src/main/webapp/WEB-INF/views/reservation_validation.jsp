@@ -15,6 +15,7 @@
         <th>Date</th>
         <th>Action</th>
     </tr>
+
     <c:forEach var="resa" items="${reservations}">
         <tr>
             <td>${resa.id_reservation}</td>
