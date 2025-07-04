@@ -86,7 +86,24 @@
             </c:forEach>
         </tbody>
     </table>
+    <div class="form-container">
+        <h3>Filtrer les prêts</h3>
+        <form action="${pageContext.request.contextPath}/bibliothecaires/accueil" method="get">
+            <div>
+                <label for="idAdherent">ID Adhérent (optionnel) :</label>
+                <input type="text" id="idAdherent" name="idAdherent"/>
+            </div>
+            <div>
+                <label for="enCoursSeulement">Prêts en cours uniquement :</label>
+                <input type="checkbox" id="enCoursSeulement" name="enCoursSeulement" value="true"/>
+            </div>
+            <div>
+                <button type="submit">Filtrer</button>
+            </div>
+        </form>
+    </div>
     <p><a href="${pageContext.request.contextPath}/">Déconnexion</a></p>
+
 </div>
 </body>
 </html>
