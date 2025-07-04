@@ -36,9 +36,6 @@ public class AdherentService {
         adherentRepository.deleteById(id);
     }
 
-    /**
-     * Ajoute un nouvel adhérent et initialise son quota individuel.
-     */
     public Adherent inscrireAdherent(Adherent adherent, int idTypeAdherent) {
         TypeAdherent typeAdherent = typeAdherentRepository.findById(idTypeAdherent)
             .orElseThrow(() -> new RuntimeException("Type d'adhérent non trouvé."));

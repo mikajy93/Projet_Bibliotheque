@@ -1,7 +1,6 @@
 CREATE DATABASE IF NOT EXISTS bibliotheque;
 USE bibliotheque;
 
--- Create tables that have no foreign key dependencies first
 CREATE TABLE Auteur (
     id_auteur INT PRIMARY KEY AUTO_INCREMENT,
     nom VARCHAR(50) NOT NULL,

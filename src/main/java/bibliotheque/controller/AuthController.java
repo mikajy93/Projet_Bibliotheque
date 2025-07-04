@@ -1,8 +1,6 @@
 package bibliotheque.controller;
 
 import bibliotheque.entity.Adherent;
-import bibliotheque.entity.Livre;
-import bibliotheque.entity.Pret;
 import bibliotheque.repository.ExemplaireRepository;
 import bibliotheque.repository.LivreRepository;
 import bibliotheque.repository.TypeAdherentRepository;
@@ -42,12 +40,11 @@ public class AuthController {
     @Autowired
     private AdherentService adherentService;
 
-
     @GetMapping({"/", "/auth/login"})
     public String showLoginForm(Model model) {
         return "login";
     }
-
+    
     @PostMapping("/auth/login")
     public String processLogin(@RequestParam("email") String email, 
                               @RequestParam("motDePasse") String motDePasse, 
@@ -55,11 +52,10 @@ public class AuthController {
                               HttpSession session) {
         try {
             String role = authService.authenticate(email, motDePasse, session);
-            String contextPath = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
             if ("adherent".equals(role)) {
-                return "redirect:" + contextPath + "/adherent/accueil";
+                return "redirect:/adherent/accueil";
             } else if ("bibliothecaire".equals(role)) {
-                return "redirect:" + contextPath + "/bibliothecaire/accueil";
+                return "redirect:/bibliothecaire/accueil";
             }
         } catch (RuntimeException e) {
             model.addAttribute("error", "Identifiant ou mot de passe incorrect.");

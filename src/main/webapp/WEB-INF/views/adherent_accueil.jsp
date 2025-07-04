@@ -119,20 +119,27 @@
                     <td><c:out value="${livre.ageMinimum}"/></td>
                     <td><c:out value="${livre.anneePublication}"/></td>
                     <td>
+                        <c:set var="hasAvailable" value="false"/>
                         <c:forEach var="exemp" items="${exemplaires}">
-                            <c:if test="${exemp.livre.id_livre == livre.id_livre}">
-                                <!-- Ici tu peux ajouter une condition pour n'afficher que les exemplaires disponibles -->
+                            <c:if test="${exemp.livre.id_livre == livre.id_livre && statutsExemplaires[exemp.id_exemplaire] == 'Disponible'}">
                                 <form action="${pageContext.request.contextPath}/adherent/emprunter" method="post" style="display:inline;">
                                     <input type="hidden" name="idExemplaire" value="${exemp.id_exemplaire}"/>
-                                    <input type="hidden" name="idTypePret" value="1"/><!-- ou autre valeur selon le type de prêt -->
+                                    <input type="hidden" name="idTypePret" value="1"/>
                                     <button type="submit">Prêter #${exemp.id_exemplaire}</button>
                                 </form>
+                                <!-- Formulaire de réservation pour l'exemplaire -->
+                                <form action="${pageContext.request.contextPath}/adherent/reserver" method="post" style="display:inline;">
+                                    <input type="hidden" name="idExemplaire" value="${exemp.id_exemplaire}"/>
+                                    <label for="dateReservation_${exemp.id_exemplaire}" style="font-size:0.9em;">Date :</label>
+                                    <input type="date" id="dateReservation_${exemp.id_exemplaire}" name="dateReservation" required style="font-size:0.9em;"/>
+                                    <button type="submit" style="margin-left:5px;">Réserver #${exemp.id_exemplaire}</button>
+                                </form>
+                                <c:set var="hasAvailable" value="true"/>
                             </c:if>
                         </c:forEach>
-                        <form action="${pageContext.request.contextPath}/adherent/reserver" method="post" style="display:inline;">
-                            <input type="hidden" name="idLivre" value="${livre.id_livre}"/>
-                            <button type="submit">Réserver</button>
-                        </form>
+                        <c:if test="${!hasAvailable}">
+                            <span style="color:#c77">Aucun exemplaire disponible</span>
+                        </c:if>
                     </td>
                 </tr>
             </c:forEach>

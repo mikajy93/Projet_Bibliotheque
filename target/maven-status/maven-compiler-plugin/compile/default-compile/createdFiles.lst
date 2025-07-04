@@ -40,6 +40,7 @@ bibliotheque\entity\EtatExemplaire.class
 bibliotheque\service\TypeLivreService.class
 bibliotheque\service\ProlongementService.class
 bibliotheque\controller\StatusExemplaireController.class
+bibliotheque\controller\ReservationValidationController.class
 bibliotheque\repository\ProlongementRepository.class
 bibliotheque\repository\LivreRepository.class
 bibliotheque\service\AuteurService.class

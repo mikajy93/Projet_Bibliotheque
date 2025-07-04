@@ -22,6 +22,7 @@ public class Adherent {
     @Column(name = "date_naissance", nullable = false)
     private java.util.Date dateNaissance;
 
+    @Column(name = "quota_restant", nullable = false)
     private Integer quotaRestant;
 
     @ManyToOne
