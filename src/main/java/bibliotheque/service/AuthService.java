@@ -64,8 +64,6 @@ public class AuthService {
         throw new RuntimeException("Identifiant ou mot de passe incorrect.");
     }
 
-
-
     public void emprunterLivre(int idAdherent, int idExemplaire, int idTypePret) {
         // Vérification 1: L'adhérent existe
         Optional<Adherent> adherentOpt = adherentRepository.findById(idAdherent);
@@ -75,7 +73,7 @@ public class AuthService {
         Adherent adherent = adherentOpt.get();
 
         // Vérification 2: Abonnement valide
-        Optional<Abonnement> abonnementOpt = abonnementRepository.findValidByAdherentId(idAdherent);
+        Optional<Abonnement> abonnementOpt = abonnementRepository.findValidByAdherentId(idAdherent, new Date());
         if (!abonnementOpt.isPresent()) {
             throw new RuntimeException("Aucun abonnement valide pour cet adhérent.");
         }
@@ -88,10 +86,10 @@ public class AuthService {
         Exemplaire exemplaire = exemplaireOpt.get();
 
         // Vérification 4: Exemplaire disponible et en bon état
-        Optional<StatusExemplaire> statusOpt = statusExemplaireRepository.findLatestByExemplaireId(idExemplaire);
-        if (!statusOpt.isPresent() || !"Disponible".equalsIgnoreCase(statusOpt.get().getEtat().getLibelle())) {
-            throw new RuntimeException("L'exemplaire n'est pas disponible ou n'est pas en bon état.");
-        }
+        // Optional<StatusExemplaire> statusOpt = statusExemplaireRepository.findLatestByExemplaireId(idExemplaire);
+        // if (!statusOpt.isPresent() || !"Disponible".equalsIgnoreCase(statusOpt.get().getEtat().getLibelle())) {
+        //     throw new RuntimeException("L'exemplaire n'est pas disponible ou n'est pas en bon état.");
+        // }
 
         // Vérification 5: Aucune pénalité active
         Optional<Penalite> penaliteOpt = penaliteRepository.findActiveByAdherentId(idAdherent);
@@ -118,22 +116,6 @@ public class AuthService {
                         r.getStatutReservation().getId_statut_reservation() == 1);
         if (isReserved) {
             throw new RuntimeException("L'exemplaire est réservé par un autre adhérent. Essayez de réserver.");
-        }
-
-        // Vérification 9: Prêts en retard
-        List<Pret> pretsEnRetard = pretRepository.findAll().stream()
-                .filter(p -> p.getAdherent().getId_adherent() == idAdherent &&
-                        p.getDateRetourReelle() == null &&
-                        p.getDateRetourPrevue().before(new Date()))
-                .toList();
-        if (!pretsEnRetard.isEmpty()) {
-            for (Pret pret : pretsEnRetard) {
-                Penalite penalite = new Penalite();
-                penalite.setPret(pret);
-                penalite.setDureePenalite(adherent.getTypeAdherent().getDureePenalite());
-                penaliteRepository.save(penalite);
-            }
-            throw new RuntimeException("Prêts en retard détectés. Pénalité appliquée. Nouveaux prêts bloqués.");
         }
 
         // Récupérer le TypePret complet via le repository
@@ -205,8 +187,7 @@ public class AuthService {
         statusExemplaire.setEtat(etat);
         statusExemplaireRepository.save(statusExemplaire);
     }
-    
-    // Méthode utilitaire pour comparer deux dates sans tenir compte de l'heure
+
     private boolean isSameDay(Date d1, Date d2) {
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();
@@ -215,8 +196,6 @@ public class AuthService {
         return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
             && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
     }
-
-
 
     public List<Pret> getHistoriquePrets() {
         return pretRepository.findAll();

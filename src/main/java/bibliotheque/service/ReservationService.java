@@ -1,14 +1,19 @@
 package bibliotheque.service;
 
 import bibliotheque.entity.Adherent;
+import bibliotheque.entity.EtatExemplaire;
 import bibliotheque.entity.Exemplaire;
 import bibliotheque.entity.Reservation;
+import bibliotheque.entity.StatusExemplaire;
 import bibliotheque.entity.StatutReservation;
 import bibliotheque.repository.AbonnementRepository;
 import bibliotheque.repository.AdherentRepository;
 import bibliotheque.repository.ExemplaireRepository;
+import bibliotheque.repository.PretRepository;
 import bibliotheque.repository.ReservationRepository;
+import bibliotheque.repository.StatusExemplaireRepository;
 import bibliotheque.repository.StatutReservationRepository;
+import bibliotheque.repository.TypeAdherentRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,14 +24,6 @@ import java.util.Optional;
 
 @Service
 public class ReservationService {
-    @Autowired
-    private AdherentRepository adherentRepository;
-    @Autowired
-    private AbonnementRepository abonnementRepository;
-    @Autowired
-    private ExemplaireRepository exemplaireRepository;
-    @Autowired
-    private StatutReservationRepository statutReservationRepository;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -47,6 +44,14 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    @Autowired
+    private AdherentRepository adherentRepository;
+    @Autowired
+    private AbonnementRepository abonnementRepository;
+    @Autowired
+    private ExemplaireRepository exemplaireRepository;
+    @Autowired
+    private StatutReservationRepository statutReservationRepository;
 
     public String reserverExemplaire(int idAdherent, int idExemplaire, Date dateReservation) {
         // Règle 1: adhérent existe
@@ -91,7 +96,6 @@ public class ReservationService {
         return reservationRepository.findAllPending();
     }
 
-
     public String validerReservation(int idReservation, boolean valider) {
         Reservation resa = reservationRepository.findById(idReservation).orElse(null);
         if (resa == null) return "Réservation introuvable.";
@@ -111,5 +115,4 @@ public class ReservationService {
             return "Réservation refusée.";
         }
     }
-
 }
