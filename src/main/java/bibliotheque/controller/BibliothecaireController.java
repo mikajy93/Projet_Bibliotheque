@@ -41,7 +41,7 @@ public class BibliothecaireController {
             return "redirect:" + contextPath + "/";
         }
         model.addAttribute("userName", userName);
-        model.addAttribute("prets", authService.getHistoriquePrets(null, null)); // Récupère tous les prêts
+        // model.addAttribute("prets", authService.getHistoriquePrets(null, null)); // Récupère tous les prêts
         return "bibliothecaire_accueil";
     }
 
@@ -61,15 +61,15 @@ public class BibliothecaireController {
             Optional<Adherent> adherentOpt = adherentRepository.findById(idAdherent);
             if (!adherentOpt.isPresent()) {
                 model.addAttribute("error", "Adhérent non trouvé.");
-                model.addAttribute("prets", authService.getHistoriquePrets(null, null));
+                // model.addAttribute("prets", authService.getHistoriquePrets(null, null));
                 model.addAttribute("userName", session.getAttribute("userName"));
                 return "bibliothecaire_accueil";
             }
 
-            Optional<Abonnement> existingAbonnement = abonnementService.findValidByAdherentId(idAdherent);
+            // Optional<Abonnement> existingAbonnement = abonnementService.findValidByAdherentId(idAdherent);
             if (existingAbonnement.isPresent()) {
                 model.addAttribute("error", "Cet adhérent a déjà un abonnement valide.");
-                model.addAttribute("prets", authService.getHistoriquePrets(null, null));
+                // model.addAttribute("prets", authService.getHistoriquePrets(null, null));
                 model.addAttribute("userName", session.getAttribute("userName"));
                 return "bibliothecaire_accueil";
             }
@@ -80,7 +80,7 @@ public class BibliothecaireController {
 
             if (startDate.after(endDate)) {
                 model.addAttribute("error", "La date de début doit être antérieure à la date de fin.");
-                model.addAttribute("prets", authService.getHistoriquePrets(null, null));
+                // model.addAttribute("prets", authService.getHistoriquePrets(null, null));
                 model.addAttribute("userName", session.getAttribute("userName"));
                 return "bibliothecaire_accueil";
             }
@@ -96,7 +96,7 @@ public class BibliothecaireController {
             model.addAttribute("error", "Erreur lors de la création de l'abonnement : " + e.getMessage());
         }
 
-        model.addAttribute("prets", authService.getHistoriquePrets(null, null));
+        // model.addAttribute("prets", authService.getHistoriquePrets(null, null));
         model.addAttribute("userName", session.getAttribute("userName"));
         return "bibliothecaire_accueil";
     }
@@ -112,7 +112,7 @@ public String showBibliothecaireAccueil(@RequestParam(value = "idAdherent", requ
         return "redirect:" + contextPath + "/";
     }
     model.addAttribute("userName", userName);
-    model.addAttribute("prets", authService.getHistoriquePrets(idAdherent, enCoursSeulement));
+    // model.addAttribute("prets", authService.getHistoriquePrets(idAdherent, enCoursSeulement));
     return "bibliothecaire_accueil";
 }
 }
